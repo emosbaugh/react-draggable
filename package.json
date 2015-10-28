@@ -1,6 +1,6 @@
 {
   "name": "react-draggable",
-  "version": "0.8.5",
+  "version": "0.8.5-emosbaugh",
   "description": "React draggable component",
   "main": "index.js",
   "scripts": {
@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/mzabriskie/react-draggable",
   "devDependencies": {
+    "eslint": "^1.7.3",
     "jsx-loader": "^0.13.2",
     "karma": "^0.13.10",
     "karma-chrome-launcher": "^0.2.0",

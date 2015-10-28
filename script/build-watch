@@ -6,7 +6,7 @@ function finish {
   kill $SERVER_PID
 }
 
-BIN = ../node_modules/.bin
+BIN=./node_modules/.bin
 
 
 $BIN/webpack --watch --devtool inline-source-map &

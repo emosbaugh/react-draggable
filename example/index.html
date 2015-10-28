@@ -48,7 +48,9 @@
   </style>
 </head>
 <body>
-<script src="//fb.me/react-with-addons-0.13.2.js"></script>
+<div id="example"></div>
+<script src="//fb.me/react-with-addons-0.14.0.js"></script>
+<script src="//fb.me/react-dom-0.14.0.js"></script>
 <script src="//fb.me/JSXTransformer-0.13.2.js"></script>
 <script src="../dist/react-draggable.js"></script>
 <script type="text/jsx">
@@ -151,7 +153,7 @@
     }
   });
 
-  React.render(<App/>, document.body);
+  ReactDOM.render(<App/>, document.getElementById('example'));
 </script>
 </body>
 </html>

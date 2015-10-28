@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("React"));
+		module.exports = factory(require("React"), require("ReactDOM"));
 	else if(typeof define === 'function' && define.amd)
-		define(["React"], factory);
+		define(["React", "ReactDOM"], factory);
 	else if(typeof exports === 'object')
-		exports["ReactDraggable"] = factory(require("React"));
+		exports["ReactDraggable"] = factory(require("React"), require("ReactDOM"));
 	else
-		root["ReactDraggable"] = factory(root["React"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
+		root["ReactDraggable"] = factory(root["React"], root["ReactDOM"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -64,10 +64,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 	
 	var React = __webpack_require__(2);
+	var ReactDOM = __webpack_require__(3);
 	var emptyFunction = function(){};
-	var assign = __webpack_require__(3);
-	var classNames = __webpack_require__(4);
-	var browserPrefix = __webpack_require__(5)();
+	var assign = __webpack_require__(4);
+	var classNames = __webpack_require__(5);
+	var browserPrefix = __webpack_require__(6)();
 	
 	//
 	// Helpers. See Element definition below this section.
@@ -77,7 +78,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // State changes are often (but not always!) async. We want the latest value.
 	  var state = draggable._pendingState || draggable.state;
 	  return {
-	    node: draggable.getDOMNode(),
+	    node: ReactDOM.findDOMNode(draggable),
 	    position: {
 	      top: state.clientY,
 	      left: state.clientX
@@ -218,7 +219,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function getBoundPosition(draggable, clientX, clientY) {
 	  var bounds = JSON.parse(JSON.stringify(draggable.props.bounds));
-	  var node = draggable.getDOMNode();
+	  var node = ReactDOM.findDOMNode(draggable);
 	  var parent = node.parentNode;
 	
 	  if (bounds === 'parent') {
@@ -464,6 +465,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    zIndex: React.PropTypes.number,
 	
 	    /**
+	     * `allowAnyClick` allows dragging using any mouse button.
+	     * By default, we only accept the left button.
+	     *
+	     * Defaults to `false`.
+	     */
+	    allowAnyClick: React.PropTypes.bool,
+	
+	    /**
 	     * Called when dragging starts.
 	     * If this function returns the boolean false, dragging will be canceled.
 	     *
@@ -541,7 +550,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  componentDidMount: function() {
 	    // Check to see if the element passed is an instanceof SVGElement
-	    if( React.findDOMNode(this) instanceof SVGElement) {
+	    if( ReactDOM.findDOMNode(this) instanceof SVGElement) {
 	        this.setState({ isElementSVG: true });
 	    }
 	  },
@@ -558,6 +567,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      axis: 'both',
 	      bounds: false,
 	      handle: null,
+	      allowAnyClick: false, // by default only accept left click
 	      cancel: null,
 	      grid: null,
 	      moveOnStartChange: false,
@@ -600,6 +610,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    // Make it possible to attach event handlers on top of this one
 	    this.props.onMouseDown(e);
+	
+	    // Only accept left-clicks.
+	    if (!this.props.allowAnyClick && typeof e.button === 'number' && e.button !== 0) return false;
 	
 	    // Short circuit if handle or cancel prop was provided and selector doesn't match
 	    if ((this.props.handle && !matchesSelector(e.target, this.props.handle)) ||
@@ -820,6 +833,12 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports) {
 
+	module.exports = __WEBPACK_EXTERNAL_MODULE_3__;
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
 	/* eslint-disable no-unused-vars */
 	'use strict';
 	var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -862,7 +881,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -870,12 +889,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  Licensed under the MIT License (MIT), see
 	  http://jedwatson.github.io/classnames
 	*/
+	/* global define */
 	
 	(function () {
 		'use strict';
 	
-		function classNames () {
+		var hasOwn = {}.hasOwnProperty;
 	
+		function classNames () {
 			var classes = '';
 	
 			for (var i = 0; i < arguments.length; i++) {
@@ -884,15 +905,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 				var argType = typeof arg;
 	
-				if ('string' === argType || 'number' === argType) {
+				if (argType === 'string' || argType === 'number') {
 					classes += ' ' + arg;
-	
 				} else if (Array.isArray(arg)) {
 					classes += ' ' + classNames.apply(null, arg);
-	
-				} else if ('object' === argType) {
+				} else if (argType === 'object') {
 					for (var key in arg) {
-						if (arg.hasOwnProperty(key) && arg[key]) {
+						if (hasOwn.call(arg, key) && arg[key]) {
 							classes += ' ' + key;
 						}
 					}
@@ -904,20 +923,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 		if (typeof module !== 'undefined' && module.exports) {
 			module.exports = classNames;
-		} else if (true){
-			// AMD. Register as an anonymous module.
+		} else if (true) {
+			// register as 'classnames', consistent with npm package name
 			!(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
 				return classNames;
 			}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 			window.classNames = classNames;
 		}
-	
 	}());
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	module.exports = function() {

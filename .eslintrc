@@ -1,15 +1,15 @@
 {
   "rules": {
     "strict": 0,
-    "quotes": ["single"],
-    "curly": "multi-line",
+    "quotes": [2, "single"],
+    "curly": [2, "multi-line"],
     "camelcase": 0,
-    "no-use-before-define": "nofunc",
+    "no-use-before-define": [2, "nofunc"],
     "no-underscore-dangle": 0,
     "no-unused-vars": 0,
     "new-cap": 0
   },
-  env: {
+  "env": {
     "browser": true,
     "node": true
   }
